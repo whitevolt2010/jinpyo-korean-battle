@@ -806,8 +806,8 @@ async function movePiece(p, steps) {
 /* ---------- 주사위 ---------- */
 function rollDice(gold) {
   return new Promise(res => {
-    const val = gold ? 6 : 1 + rnd(6);
-    dice = { n: 1 + rnd(6), rot: 0, sc: 0, gold: !!gold };
+    const val = gold ? 6 : 1 + rnd(4);
+    dice = { n: 1 + rnd(4), rot: 0, sc: 0, gold: !!gold };
     const st = performance.now(), dur = 1000; SFX.roll();
     let stop = false;
     const tap = () => { stop = true; };
@@ -816,7 +816,7 @@ function rollDice(gold) {
       const el = performance.now() - st, k = clamp(el / dur, 0, 1);
       dice.sc = k < .2 ? k / .2 : 1 + Math.sin(k * 12) * .05 * (1 - k);
       dice.rot = (1 - k) * 12 * Math.sin(el / 90);
-      if (el % 90 < 18) dice.n = 1 + rnd(6);
+      if (el % 90 < 18) dice.n = 1 + rnd(gold ? 6 : 4);
       if (k < 1 && !(stop && el > 350)) requestAnimationFrame(step);
       else {
         dice.n = val; dice.rot = 0; dice.sc = 1.15; SFX.diceStop();
@@ -846,10 +846,10 @@ async function tileEffect(p) {
     floatTxt(p.x, p.y - TR, '⭐+5', '#ffd43b'); burst(p.x, p.y, 14, ['#ffd43b', '#fff3bf'], '⭐'); SFX.star(3);
     toast('별 5개 획득!', '#ffd43b'); await wait(700);
   } else if (ty === 'boost') {
-    SFX.whoosh(); toast('🚀 로켓! 3칸 앞으로!', '#69db7c'); await wait(500); await movePiece(p, 3);
+    SFX.whoosh(); toast('🚀 로켓! 2칸 앞으로!', '#69db7c'); await wait(500); await movePiece(p, 2);
   } else if (ty === 'slip') {
     if (p === me && useItem('shield')) { toast('🛡️ 방패가 막았다!', '#4dabf7'); SFX.shield(); await wait(700); }
-    else { SFX.slip(); toast('🌀 미끄럼! 3칸 뒤로!', '#ff8787'); await wait(500); await movePiece(p, -3); }
+    else { SFX.slip(); toast('🌀 미끄럼! 2칸 뒤로!', '#ff8787'); await wait(500); await movePiece(p, -2); }
   } else if (ty === 'gift') {
     if (p === me) addItem(['dice', 'shield', 'hint'][rnd(3)]);
     else { toast('말썽이가 선물을 가져갔다!', '#da77f2'); SFX.box(); }
